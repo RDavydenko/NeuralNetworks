@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -17,13 +17,13 @@ namespace NeuralNetworks.Tests
 			var outputs = new double[] { 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1 };
 			var inputs = new double[,]
 			{
-                // Результат - Пациент болен - 1
-                //             Пациент Здоров - 0
+                // Р РµР·СѓР»СЊС‚Р°С‚ - РџР°С†РёРµРЅС‚ Р±РѕР»РµРЅ - 1
+                //             РџР°С†РёРµРЅС‚ Р—РґРѕСЂРѕРІ - 0
 
-                // Неправильная температура T
-                // Хороший возраст A
-                // Курит S
-                // Правильно питается F
+                // РќРµРїСЂР°РІРёР»СЊРЅР°СЏ С‚РµРјРїРµСЂР°С‚СѓСЂР° T
+                // РҐРѕСЂРѕС€РёР№ РІРѕР·СЂР°СЃС‚ A
+                // РљСѓСЂРёС‚ S
+                // РџСЂР°РІРёР»СЊРЅРѕ РїРёС‚Р°РµС‚СЃСЏ F
                 //T  A  S  F
                 { 0, 0, 0, 0 },
 				{ 0, 0, 0, 1 },
@@ -43,7 +43,7 @@ namespace NeuralNetworks.Tests
 				{ 1, 1, 1, 1 }
 			};
 
-			// 4 входных, 1 - выходной, 1 скрытый с 4 нейронами
+			// 4 РІС…РѕРґРЅС‹С…, 1 - РІС‹С…РѕРґРЅРѕР№, 1 СЃРєСЂС‹С‚С‹Р№ СЃ 4 РЅРµР№СЂРѕРЅР°РјРё
 			var topology = new Topology(
 				inputCount: 4,
 				outputCount: 1,
@@ -52,10 +52,10 @@ namespace NeuralNetworks.Tests
 				);
 			var neuralNetwork = new NeuralNetwork(topology);
 
-			// Обучение
-			var difference = neuralNetwork.Learn(outputs, inputs, 100000); // Ср. квадратичное отклонение
+			// РћР±СѓС‡РµРЅРёРµ
+			var difference = neuralNetwork.Learn(outputs, inputs, 100000); // РЎСЂ. РєРІР°РґСЂР°С‚РёС‡РЅРѕРµ РѕС‚РєР»РѕРЅРµРЅРёРµ
 
-			// Использование после обучения
+			// РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РїРѕСЃР»Рµ РѕР±СѓС‡РµРЅРёСЏ
 			var results = new List<double>(outputs.Length);
 			var inputsLength = inputs.GetLength(0);
 			for (int i = 0; i < inputsLength; i++)
@@ -63,7 +63,7 @@ namespace NeuralNetworks.Tests
 				results.Add(neuralNetwork.FeedForward(NeuralNetwork.GetRow(inputs, i)));
 			}
 
-			Debug.WriteLine("Ср. квадратичное отклонение: " + difference);
+			Debug.WriteLine("РЎСЂ. РєРІР°РґСЂР°С‚РёС‡РЅРѕРµ РѕС‚РєР»РѕРЅРµРЅРёРµ: " + difference);
 
 			// Assert
 			for (int i = 0; i < results.Count; i++)
@@ -82,21 +82,21 @@ namespace NeuralNetworks.Tests
 			var inputsCount = 0;
 			using (var sr = new StreamReader("datasets/heart.csv"))
 			{
-				var header = sr.ReadLine(); // Заголовочная строка
+				var header = sr.ReadLine(); // Р—Р°РіРѕР»РѕРІРѕС‡РЅР°СЏ СЃС‚СЂРѕРєР°
 				for (; !sr.EndOfStream;)
 				{
 					var row = sr.ReadLine();
 					var values = row.Split(',').Select(v => Convert.ToDouble(v.Replace('.', ','))).ToList();
-					var output = values.Last(); // Ожидаемое значение
-					var input = values.Take(values.Count - 1).ToArray(); // Массив входных параметров (без ожидаемого значения)
-					inputsCount = input.Length; // Считаем количество входных параметров В ОДНОЙ СТРОКЕ
+					var output = values.Last(); // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
+					var input = values.Take(values.Count - 1).ToArray(); // РњР°СЃСЃРёРІ РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ (Р±РµР· РѕР¶РёРґР°РµРјРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ)
+					inputsCount = input.Length; // РЎС‡РёС‚Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ Р’ РћР”РќРћР™ РЎРўР РћРљР•
 
 					outputs.Add(output);
 					inputs.Add(input);
 				}
 			}
 
-			// Перегоняю в двумерный массив
+			// РџРµСЂРµРіРѕРЅСЏСЋ РІ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ
 			var validInputs = new double[inputs.Count, inputsCount];
 			for (int i = 0; i < validInputs.GetLength(0); i++)
 			{
@@ -114,11 +114,11 @@ namespace NeuralNetworks.Tests
 				);
 			NeuralNetwork neuralNetwork = new NeuralNetwork(topology);
 
-			// Тренируем нейросеть
+			// РўСЂРµРЅРёСЂСѓРµРј РЅРµР№СЂРѕСЃРµС‚СЊ
 			double difference = neuralNetwork.Learn(outputs.ToArray(), validInputs, 1000);
-			Debug.WriteLine("Квадратичное отклонение: " + difference.ToString());
+			Debug.WriteLine("РљРІР°РґСЂР°С‚РёС‡РЅРѕРµ РѕС‚РєР»РѕРЅРµРЅРёРµ: " + difference.ToString());
 
-			// Запуск нейросети
+			// Р—Р°РїСѓСЃРє РЅРµР№СЂРѕСЃРµС‚Рё
 			var resultsAfterTraining = new List<double>(outputs.Count);
 			foreach (var input in inputs)
 			{

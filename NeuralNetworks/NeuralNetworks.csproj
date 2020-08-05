@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,6 +48,7 @@
     <Compile Include="Models\NeuralNetwork.cs" />
     <Compile Include="Models\Neuron.cs" />
     <Compile Include="Models\NeuronType.cs" />
+    <Compile Include="Models\PictureConverter.cs" />
     <Compile Include="Models\Topology.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
