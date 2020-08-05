@@ -17,4 +17,10 @@
     <ProjectReference Include="..\NeuralNetworks\NeuralNetworks.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="datasets\heart.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

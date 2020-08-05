@@ -38,13 +38,14 @@ namespace NeuralNetworks.Models
 
 		public double Learn(double[] outputs, double[,] inputs, int epoch)
 		{
-			var error = 0.0;
+			//var signals = Normalization(inputs);
 
+			var error = 0.0;
 			for (int i = 0; i < epoch; i++)
 			{
-				for(int j = 0; j < outputs.Length; j++)
+				// Прогоняем все данные из датасета
+				for (int j = 0; j < outputs.Length; j++)
 				{
-					// Прогоняем все данные из датасета
 					double[] row = GetRow(inputs, j);
 					error += Backpropagation(outputs[j], row);
 				}
@@ -90,6 +91,69 @@ namespace NeuralNetworks.Models
 				}
 			}
 			return difference * difference; // Возращается квадратичная ошибка
+		}
+
+		// Масштабирование
+		private double[,] Scalling(double[,] inputs)
+		{
+			var result = new double[inputs.GetLength(0), inputs.GetLength(1)];
+			for (int column = 0; column < inputs.GetLength(1); column++)
+			{
+				var min = inputs[0, column]; // Определяем минимум для конктретного столбца
+				var max = inputs[0, column]; // Определяем максимум для конктретного столбца
+
+				for (int row = 1; row < inputs.GetLength(0); row++)
+				{
+					var current = inputs[row, column];
+					if (current < min)
+					{
+						min = current;
+					}
+					if (current > max)
+					{
+						max = current;
+					}
+				}
+
+				double divided = max - min;
+				for (int row = 0; row < inputs.GetLength(0); row++)
+				{
+					// Масштабирование
+					result[row, column] = (inputs[row, column] - min) / divided;
+				}
+			}
+			return result;
+		}
+
+		// Нормализация
+		private double[,] Normalization(double[,] inputs)
+		{
+			var result = new double[inputs.GetLength(0), inputs.GetLength(1)];
+			for (int column = 0; column < inputs.GetLength(1); column++)
+			{
+				// Получение среднего значения всех сигналов столбца
+				var sum = 0.0;
+				for (int row = 0; row < inputs.GetLength(0); row++)
+				{
+					sum += inputs[row, column];
+				}
+				var avg = sum / inputs.GetLength(0); // Среднее значение столбца
+
+				// Получение среднего отклонения
+				var error = 0.0;
+				for (int row = 0; row < inputs.GetLength(0); row++)
+				{
+					error += (inputs[row, column] - avg) * (inputs[row, column] - avg);
+				}
+				var standartQuadError = Math.Sqrt(error / inputs.GetLength(0)); // Стандартное квадратичное отклонение элемента от стреднего значения
+
+				// Нормализация
+				for (int row = 0; row < inputs.GetLength(0); row++)
+				{
+					result[row, column] = (inputs[row, column] - avg) / standartQuadError;
+				}
+			}
+			return result;
 		}
 
 		private void SendSignalsToInputNeurons(params double[] inputSignals)
