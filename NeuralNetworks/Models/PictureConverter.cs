@@ -11,26 +11,30 @@ namespace NeuralNetworks.Models
 	public class PictureConverter
 	{
 		public int Boundary { get; set; } = 128; // Пороговое значение при расчете яркости
+		public int GroupSize { get; set; } = 10; // Свертка пикселей изображения в группы
+
 		public int Width { get; private set; } // Ширина последнего обработанного изображения
 		public int Height { get; private set; } // Высота последнего обработанного изображения
 
 		public List<int> Convert(string path)
 		{
 			var image = new Bitmap(path);
-			var size = image.Width * image.Height;
 
-			Width = image.Width;
-			Height = image.Height;
+			var resizedImage = new Bitmap(image, new Size(50, 50));
+			var size = resizedImage.Width * resizedImage.Height;
+
+			Width = resizedImage.Width;
+			Height = resizedImage.Height;
 
 			var result = new List<int>(size);
 
-			for (int y = 0; y < image.Height; y++)
+			for (int y = 0; y < resizedImage.Height; y++)
 			{
-				for (int x = 0; x < image.Width; x++)
+				for (int x = 0; x < resizedImage.Width; x++)
 				{
-					var pixel = image.GetPixel(x, y);
+					var pixel = resizedImage.GetPixel(x, y);
 					var value = GetBrightness(pixel);
-					result.Add(value);
+					result.Add(value);					
 				}
 			}
 
@@ -46,7 +50,7 @@ namespace NeuralNetworks.Models
 		public void Save(string path, int width, int height, List<int> pixels)
 		{
 			var image = new Bitmap(width, height);
-			for (int y= 0; y < image.Height; y++)
+			for (int y = 0; y < image.Height; y++)
 			{
 				for (int x = 0; x < image.Width; x++)
 				{

@@ -12,7 +12,7 @@ namespace NeuralNetworks.Tests
 		public void SaveAfterBrightness()
 		{
 			var pc = new PictureConverter();
-			var pixels = pc.Convert(@"Images\Uninfected.png");
+			var pixels = pc.Convert(@"Images\Parasitized.png");
 			pc.Save(@"C:\image.png", pc.Width, pc.Height, pixels);
 		}
 	}

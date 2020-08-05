@@ -27,7 +27,7 @@ namespace NeuralNetworks.Models
 			InitWeightsRandomValues(inputCount); // Заполняем случайными коэффициентами
 		}
 
-		public double FeedForward(List<double> inputs)
+		public double Predict(List<double> inputs)
 		{
 			if (inputs.Count != Weights.Count)
 			{

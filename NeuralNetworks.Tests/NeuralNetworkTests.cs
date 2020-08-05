@@ -60,7 +60,7 @@ namespace NeuralNetworks.Tests
 			var inputsLength = inputs.GetLength(0);
 			for (int i = 0; i < inputsLength; i++)
 			{
-				results.Add(neuralNetwork.FeedForward(NeuralNetwork.GetRow(inputs, i)));
+				results.Add(neuralNetwork.Predict(NeuralNetwork.GetRow(inputs, i)));
 			}
 
 			Debug.WriteLine("Ср. квадратичное отклонение: " + difference);
@@ -122,7 +122,7 @@ namespace NeuralNetworks.Tests
 			var resultsAfterTraining = new List<double>(outputs.Count);
 			foreach (var input in inputs)
 			{
-				resultsAfterTraining.Add(neuralNetwork.FeedForward(input));
+				resultsAfterTraining.Add(neuralNetwork.Predict(input));
 			}
 
 			for (int i = 0; i < resultsAfterTraining.Count; i++)
@@ -131,6 +131,61 @@ namespace NeuralNetworks.Tests
 				var actual = Math.Round(resultsAfterTraining[i], 3);
 				Assert.AreEqual(expected, actual);
 			}
+		}
+
+		[TestMethod]
+		public void RecogniseImages()
+		{
+			var size = 10; // Количество изображений в выборке для тестов
+			var parasitizedPath = @"C:\Users\Roman\Desktop\datasets\malaria\Parasitized";
+			var uninfectedPath = @"C:\Users\Roman\Desktop\datasets\malaria\Uninfected";
+
+			var converter = new PictureConverter();
+			var testImageInput = converter.Convert(@"Images\Uninfected.png");
+
+			Topology topology = new Topology(
+				inputCount: testImageInput.Count,
+				outputCount: 1,
+				learningRate: 0.1,
+				hiddenLayersCount: new int[] { testImageInput.Count / 2 });
+			var neuralNetwork = new NeuralNetwork(topology);
+
+			// Обучаем паразитированными изображениями
+			double[,] parasitizedInputs = GetInputsData(parasitizedPath, converter, testImageInput, size);
+			neuralNetwork.Learn(new double[] { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 }, parasitizedInputs, 10);
+
+			// Обучаем здоровыми изображениями
+			double[,] uninfectedInputs = GetInputsData(uninfectedPath, converter, testImageInput, size);
+			neuralNetwork.Learn(new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, uninfectedInputs, 10);
+
+			// Тестирование 
+			var testParasitizedInputs = converter.Convert(@"Images\Parasitized.png").Select(x => (double)x).ToArray();
+			double parasitizedOutput = neuralNetwork.Predict(testParasitizedInputs);
+
+			var testUninfectedInputs = converter.Convert(@"Images\Uninfected.png").Select(x => (double)x).ToArray();
+			double uninfectedOutput = neuralNetwork.Predict(testUninfectedInputs);
+
+			// Assert
+
+			Assert.AreEqual(1, Math.Round(parasitizedOutput, 2));
+			Assert.AreEqual(0, Math.Round(uninfectedOutput, 2));
+
+		}
+
+		// Получить данные из изображений
+		private static double[,] GetInputsData(string path, PictureConverter converter, List<int> testImageInput, int size)
+		{
+			var images = Directory.GetFiles(path);			
+			var inputs = new double[size, testImageInput.Count];
+			for (int i = 0; i < size; i++)
+			{
+				var image = converter.Convert(images[i]);
+				for (int j = 0; j < image.Count; j++)
+				{
+					inputs[i, j] = image[j];
+				}
+			}
+			return inputs;
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace NeuralNetworks.Models
 		}
 
 
-		public double FeedForward(params double[] inputSignals)
+		public double Predict(params double[] inputSignals)
 		{
 			// Отправка входных данных на входные нейроны
 			SendSignalsToInputNeurons(inputSignals);
@@ -67,7 +67,7 @@ namespace NeuralNetworks.Models
 
 		private double Backpropagation(double expected, params double[] inputs)
 		{
-			double actual = FeedForward(inputs);
+			double actual = Predict(inputs);
 			double difference = actual - expected;
 			var lastLayer = Layers.Last();
 			foreach (var neuron in lastLayer.Neurons) // Обучение последнего слоя 
@@ -170,7 +170,7 @@ namespace NeuralNetworks.Models
 				var neuron = Layers[0].Neurons[i];
 
 
-				neuron.FeedForward(signal);
+				neuron.Predict(signal);
 			}
 		}
 
@@ -184,7 +184,7 @@ namespace NeuralNetworks.Models
 
 				foreach (var neuron in layer.Neurons)
 				{
-					neuron.FeedForward(previousLayerSignals);
+					neuron.Predict(previousLayerSignals);
 				}
 			}
 		}
