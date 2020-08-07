@@ -16,17 +16,17 @@ namespace NeuralNetworks.Models
 		public int Width { get; private set; } // Ширина последнего обработанного изображения
 		public int Height { get; private set; } // Высота последнего обработанного изображения
 
-		public List<int> Convert(string path)
+		public double[] Convert(string path)
 		{
 			var image = new Bitmap(path);
 
-			var resizedImage = new Bitmap(image, new Size(50, 50));
+			var resizedImage = new Bitmap(image, new Size(20, 20));
 			var size = resizedImage.Width * resizedImage.Height;
 
 			Width = resizedImage.Width;
 			Height = resizedImage.Height;
 
-			var result = new List<int>(size);
+			var result = new double[size];
 
 			for (int y = 0; y < resizedImage.Height; y++)
 			{
@@ -34,7 +34,7 @@ namespace NeuralNetworks.Models
 				{
 					var pixel = resizedImage.GetPixel(x, y);
 					var value = GetBrightness(pixel);
-					result.Add(value);					
+					result[y * resizedImage.Width + x] = value;					
 				}
 			}
 
@@ -47,7 +47,21 @@ namespace NeuralNetworks.Models
 			return result < Boundary ? 0 : 1;
 		}
 
-		public void Save(string path, int width, int height, List<int> pixels)
+		public Bitmap ConvertToBitmap(int width, int height, double[] pixels)
+		{
+			var image = new Bitmap(width, height);
+			for (int y = 0; y < image.Height; y++)
+			{
+				for (int x = 0; x < image.Width; x++)
+				{
+					Color color = pixels[y * width + x] == 1 ? Color.White : Color.Black;
+					image.SetPixel(x, y, color);
+				}
+			}
+			return image;
+		}
+
+		public void Save(string path, int width, int height, double[] pixels)
 		{
 			var image = new Bitmap(width, height);
 			for (int y = 0; y < image.Height; y++)

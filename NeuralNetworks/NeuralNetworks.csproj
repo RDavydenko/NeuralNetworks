@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Functions.cs" />
     <Compile Include="Models\Layer.cs" />
     <Compile Include="Models\NeuralNetwork.cs" />
     <Compile Include="Models\Neuron.cs" />

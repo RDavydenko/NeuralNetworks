@@ -14,6 +14,9 @@ namespace NeuralNetworks.Models
 		public double Output { get; private set; }
 		public double Delta { get; private set; }
 
+		public Func<double, double> Activation { get; } // Функция активации
+		public Func<double, double> ActivationDx { get; } // Производная функции активации
+
 		public Neuron(int inputCount, NeuronType neuronType = NeuronType.Hidden)
 		{
 			if (inputCount <= 0)
@@ -25,6 +28,10 @@ namespace NeuralNetworks.Models
 			Weights = new List<double>(inputCount);
 			Inputs = new List<double>(inputCount);
 			InitWeightsRandomValues(inputCount); // Заполняем случайными коэффициентами
+
+			// Установка функции активации
+			Activation = Functions.Sigmoid;
+			ActivationDx = Functions.SigmoidDx;
 		}
 
 		public double Predict(List<double> inputs)
@@ -50,7 +57,7 @@ namespace NeuralNetworks.Models
 			// Функция активации
 			if (NeuronType != NeuronType.Input)
 			{
-				Output = Sigmoid(sum);
+				Output = Activation(sum);
 			}
 			else
 			{
@@ -58,15 +65,7 @@ namespace NeuralNetworks.Models
 			}
 			return Output;
 		}
-
-		public void SetWeights(params double[] weights)
-		{
-			for (int i = 0; i < weights.Length; i++)
-			{
-				Weights[i] = weights[i];
-			}
-		}
-
+		
 		public void Learn(double error, double learningRate)
 		{
 			if (NeuronType == NeuronType.Input)
@@ -74,7 +73,7 @@ namespace NeuralNetworks.Models
 				return;
 			}
 
-			Delta = error * SigmoidDx(Output);
+			Delta = error * ActivationDx(Output);			
 
 			// Корректировка веса по ошибке
 			for (int i = 0; i < Weights.Count; i++)
@@ -82,18 +81,7 @@ namespace NeuralNetworks.Models
 				var newWeight = Weights[i] - Inputs[i] * Delta * learningRate;
 				Weights[i] = newWeight;
 			}
-		}
-
-		private double Sigmoid(double x)
-		{
-			return 1.0 / (1.0 + Math.Exp(-x));
-		}
-
-		private double SigmoidDx(double x)
-		{
-			var sigmoid = Sigmoid(x);
-			return sigmoid / (1 - sigmoid);
-		}
+		}		
 
 		private void InitWeightsRandomValues(int inputCount)
 		{
@@ -106,7 +94,8 @@ namespace NeuralNetworks.Models
 				}
 				else
 				{
-					Weights.Add(rnd.NextDouble());
+					int sign = rnd.Next(0, 2) == 0 ? 1 : -1;
+					Weights.Add(sign * rnd.NextDouble() / 2); // Случайные от -0.5 до 0.5
 				}
 				Inputs.Add(0.0);
 			}

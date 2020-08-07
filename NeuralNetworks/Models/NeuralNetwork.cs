@@ -38,7 +38,7 @@ namespace NeuralNetworks.Models
 
 		public double Learn(double[] outputs, double[,] inputs, int epoch)
 		{
-			//var signals = Normalization(inputs);
+			//var signals = Scalling(inputs); // Масштабирование входных данных
 
 			var error = 0.0;
 			for (int i = 0; i < epoch; i++)
@@ -54,13 +54,13 @@ namespace NeuralNetworks.Models
 			return error / epoch; // Возвращает среднюю ошибку
 		}
 
-		public static double[] GetRow(double[,] matrix, int column)
+		public static double[] GetRow(double[,] matrix, int row)
 		{
 			var count = matrix.GetLength(1);
 			var array = new double[count];
 			for (int i = 0; i < count; i++)
 			{
-				array[i] = matrix[column, i];
+				array[i] = matrix[row, i];
 			}
 			return array;
 		}
@@ -93,15 +93,14 @@ namespace NeuralNetworks.Models
 			return difference * difference; // Возращается квадратичная ошибка
 		}
 
-		// Масштабирование
-		private double[,] Scalling(double[,] inputs)
+		// Масштабирование (только положительные)
+		public static double[,] Scalling(double[,] inputs)
 		{
 			var result = new double[inputs.GetLength(0), inputs.GetLength(1)];
 			for (int column = 0; column < inputs.GetLength(1); column++)
 			{
 				var min = inputs[0, column]; // Определяем минимум для конктретного столбца
 				var max = inputs[0, column]; // Определяем максимум для конктретного столбца
-
 				for (int row = 1; row < inputs.GetLength(0); row++)
 				{
 					var current = inputs[row, column];
@@ -125,8 +124,8 @@ namespace NeuralNetworks.Models
 			return result;
 		}
 
-		// Нормализация
-		private double[,] Normalization(double[,] inputs)
+		// Нормализация (допускает отрицательные)
+		public static double[,] Normalization(double[,] inputs)
 		{
 			var result = new double[inputs.GetLength(0), inputs.GetLength(1)];
 			for (int column = 0; column < inputs.GetLength(1); column++)
